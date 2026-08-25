@@ -1,6 +1,6 @@
 import { addDays, diffDays, toManilaDate, todayManila } from "./dates";
 import {
-  Application, AppState, Attempt, Difficulty, Pattern, RESOLVE_INTERVALS_DAYS, TARGET_SECONDS,
+  Application, AppState, Attempt, Difficulty, Pattern, RESOLVE_INTERVALS_DAYS, TARGET_SECONDS, WEEKS,
 } from "./types";
 
 export type ProblemStatus = {
@@ -89,7 +89,7 @@ export function currentWeek(state: AppState, today = todayManila()): number | nu
   const d = diffDays(today, state.plan_start);
   if (d < 0) return null;
   const w = Math.floor(d / 7) + 1;
-  return w > state.weeks.length ? null : w;
+  return w > WEEKS.length ? null : w;
 }
 export function weekRange(state: AppState, week: number): { start: string; end: string } {
   const start = addDays(state.plan_start, (week - 1) * 7);

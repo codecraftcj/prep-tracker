@@ -90,7 +90,6 @@ export type Week = { number: number; target: string };
 export type AppState = {
   version: 1;
   plan_start: string; // YYYY-MM-DD, Monday of week 1
-  weeks: Week[];
   attempts: Attempt[];
   mocks: Mock[];
   design_reps: DesignRep[];
@@ -98,17 +97,18 @@ export type AppState = {
   applications: Application[];
 };
 
-export const SEED_WEEKS: Week[] = [
-  { number: 1, target: "Core patterns (arrays, two pointers, sliding window, hashing) to medium fluency. Start résumé numbers." },
-  { number: 2, target: "Stack, binary search, linked list. K8s project scaffold." },
-  { number: 3, target: "Trees, heaps. K8s project shipping. Draft post 1 (job-per-scrape K8s)." },
-  { number: 4, target: "Backtracking + review of W1–3 patterns. Publish post 1. Résumé numbers done." },
-  { number: 5, target: "Graphs (BFS/DFS/topo). First weekly mock. System design rep 1." },
-  { number: 6, target: "1D DP, tries. Mock. Design rep. Open OSS PR." },
-  { number: 7, target: "2D DP, intervals. Mock. Design rep. Draft post 2 (BigQuery time-travel)." },
-  { number: 8, target: "Greedy, bit manipulation, math + mixed review. Mock. Design rep. Publish post 2. LinkedIn rewrite. OSS PR merged." },
-  { number: 9, target: "8 STAR stories written. Résumé v2. Apply practice tier." },
-  { number: 10, target: "Mixed timed sets daily. Mocks. Apply target tier." },
+/** The 10-week plan. Interview-bucket first; portfolio work is background (bg). */
+export const WEEKS: Week[] = [
+  { number: 1, target: "Arrays, two pointers, sliding window, hashing. Establish talk-aloud pacing. Résumé numbers (bg)." },
+  { number: 2, target: "Stack, binary search, linked list. First mock (coding). Draft 4 STAR stories." },
+  { number: 3, target: "Trees, heaps. Mock. First system design rep (URL shortener). 4 more STAR stories." },
+  { number: 4, target: "Backtracking + re-solve sweep of W1–3. Mock (behavioral). Design rep. All 8 STAR stories written." },
+  { number: 5, target: "Graphs. Mock (coding). Design rep. K8s project shipped (bg)." },
+  { number: 6, target: "1D DP, tries. Mock. Design rep. Post 1 (bg)." },
+  { number: 7, target: "2D DP, intervals. Mock (design). Design rep. OSS PR opened (bg)." },
+  { number: 8, target: "Greedy, bit manipulation, math + mixed timed sets. Mock. Design rep. LinkedIn + résumé v2." },
+  { number: 9, target: "Mixed timed sets daily. 2 mocks (coding + behavioral). Apply practice tier." },
+  { number: 10, target: "Mixed timed sets daily. 2 mocks. Apply target tier." },
 ];
 
 export const SEED_ARTIFACTS: Omit<Artifact, "id">[] = [
@@ -127,7 +127,6 @@ export function emptyState(): AppState {
   return {
     version: 1,
     plan_start: "2026-08-24",
-    weeks: SEED_WEEKS,
     attempts: [],
     mocks: [],
     design_reps: [],

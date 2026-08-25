@@ -6,6 +6,18 @@ Personal web app for tracking a 10-week software-engineering interview preparati
 
 Land a software engineer role at an adjacent tier-1 company in Singapore (Grab, Shopee, Sea, Bytedance, Canonical, Zyte, Stripe) applying October–November 2026, with Google as a Q1 2027 target. The app exists to make the training measurable: problems solved under time, spaced re-solves, mocks, system design reps, portfolio artifacts, and applications.
 
+### Two skill buckets — weight toward interviews
+
+I have ~7 years as a working developer. The technical bucket (shipping, systems, tooling) is already strong and is proven by the résumé and existing work. The gap is the **interview bucket**: solving unfamiliar problems under a 15–30 min clock while talking, structured system-design conversations, and crisp behavioral answers. The plan, the daily target, and the metrics prioritise the interview bucket. Portfolio artifacts are background work (≤ 2 h/week), never something that displaces a timed set or a mock.
+
+Interview-bucket skills to train deliberately:
+- Timed problem solving with talk-aloud (default on). Pace: restate → brute force → optimise → code → test, out loud.
+- Recognising the pattern in < 2 min; blockers logged honestly.
+- Spaced re-solves so patterns stick (+3d / +14d).
+- Weekly mocks from **week 2**, not week 5. Self-score + interviewer feedback + one thing to fix.
+- System design as a conversation: 45-min reps with a fixed framework (requirements → estimates → API → data → high-level → deep dive → trade-offs).
+- Behavioral: 8 STAR stories written by week 4 and rehearsed aloud in mocks.
+
 ## Non-goals
 
 - Not a product. No auth beyond a single login, no multi-tenant, no marketing pages.
@@ -64,10 +76,17 @@ Fixed list, each with status todo / in_progress / done, link, and completion dat
 - Google-specific: enforce max 3 applications per rolling 30 days and 90-day same-role cooldown as a warning, not a block.
 
 ### Weekly plan
-Ten fixed weeks with start dates and a short target string each. Seed data:
-- W1–4: core patterns to medium fluency; résumé numbers; K8s project; post 1
-- W5–8: graphs, DP, intervals, tries; weekly mocks; system design 1/week; OSS PR; post 2; LinkedIn
-- W9–10: behavioral stories; résumé v2; apply practice tier (W9), target tier (W10)
+Ten fixed weeks, defined as a constant in `src/lib/types.ts` (not stored data; edit in code, ship with a commit). Week 1 starts on the Monday set in Settings. Daily target: 2 timed problems, talk-aloud. Portfolio artifacts capped at ~2 h/week.
+- W1: arrays, two pointers, sliding window, hashing. Establish the talk-aloud pacing ritual. Résumé numbers (bg).
+- W2: stack, binary search, linked list. **First mock (coding).** Draft 4 STAR stories.
+- W3: trees, heaps. Mock. **First system design rep** (URL shortener) using the framework. 4 more STAR stories.
+- W4: backtracking + re-solve sweep of W1–3. Mock (behavioral). Design rep. All 8 STAR stories written.
+- W5: graphs. Mock (coding). Design rep. K8s project shipped (bg).
+- W6: 1D DP, tries. Mock. Design rep. Post 1 (bg).
+- W7: 2D DP, intervals. Mock (design). Design rep. OSS PR opened (bg).
+- W8: greedy, bit manipulation, math + mixed timed sets. Mock. Design rep. LinkedIn + résumé v2.
+- W9: mixed timed sets daily, 2 mocks (coding + behavioral). Apply practice tier.
+- W10: mixed timed sets daily, 2 mocks. Apply target tier.
 
 ## Screens (v1)
 
@@ -88,6 +107,23 @@ Ten fixed weeks with start dates and a short target string each. Seed data:
 - Migrations are hand-written SQL, one per feature, never edited after applying.
 - Keep components small; no premature abstraction. Three similar forms is fine.
 - Commit messages: `feat:`, `fix:`, `chore:`. Small commits.
+
+## Working standards
+
+How I work, so that collaborators (human or AI) can match it.
+
+**Branches.** `main` is always deployable. Work on short-lived branches: `feat/<slug>`, `fix/<slug>`, `chore/<slug>`. Squash-merge to `main`; delete the branch.
+
+**Commits.** Conventional Commits, imperative mood, ≤ 72-char subject, no trailing period:
+`<type>(<scope>)?: <subject>` with types `feat | fix | chore | refactor | docs | test | perf`. Scope is optional and is the screen or module (`today`, `problems`, `store`, `logic`). Body explains *why* when it isn't obvious. One logical change per commit; a commit should build and lint on its own.
+
+**Pull requests.** Use `.github/PULL_REQUEST_TEMPLATE.md`. Title follows the commit format. Body: what/why, how it was verified (screenshots for UI, the exact command for logic), anything out of scope. PRs stay under ~400 lines of diff; split otherwise. Self-review before requesting review.
+
+**Quality gate before any commit.** `npm run lint` and `npx tsc --noEmit` clean; `npm run build` for anything touching routing, actions, or config. No `any`, no unused exports, no console noise.
+
+**Code style.** Prettier defaults (2-space, double quotes, semicolons). Server Components by default; `"use client"` only where there is state or browser APIs. Pure domain logic lives in `src/lib/logic.ts` and has no React or I/O in it. Prefer a native element over a library component when it works better on a phone (e.g. `<select>`).
+
+**Changes to the plan or the mastery rule** are code changes to `src/lib/types.ts` / `src/lib/logic.ts` with a `docs:` or `feat(logic):` commit that also updates this file.
 
 ## Definition of done for v1
 
