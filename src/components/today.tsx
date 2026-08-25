@@ -4,7 +4,7 @@ import { AttemptForm } from "@/components/attempt-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { fmtDuration } from "@/lib/dates";
-import type { ProblemStatus } from "@/lib/logic";
+import type { ProblemStatus, Recommendation } from "@/lib/logic";
 import { Attempt, DAILY_TARGET_ATTEMPTS, label } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -17,10 +17,11 @@ function Stat({ label, value, hot }: { label: string; value: string; hot?: boole
   );
 }
 
-type Props = { due: ProblemStatus[]; todays: Attempt[]; streak: number; today: string };
+type Prefill = { title: string; url: string; pattern: ProblemStatus["pattern"]; difficulty: ProblemStatus["difficulty"] };
+type Props = { due: ProblemStatus[]; todays: Attempt[]; streak: number; today: string; next: Recommendation[]; initialPrefill: Prefill | null };
 
-export function Today({ due, todays, streak, today }: Props) {
-  const [prefill, setPrefill] = useState<{ title: string; url: string; pattern: ProblemStatus["pattern"]; difficulty: ProblemStatus["difficulty"] } | null>(null);
+export function Today({ due, todays, streak, today, next, initialPrefill }: Props) {
+  const [prefill, setPrefill] = useState<Prefill | null>(initialPrefill);
   return (
     <div className="grid md:grid-cols-2 gap-4">
       <div className="space-y-4">
@@ -46,6 +47,21 @@ export function Today({ due, todays, streak, today }: Props) {
                   <div className="text-xs text-muted-foreground">{label(p.pattern)} · {p.difficulty} · {p.stage === 0 ? "+3d" : "+14d"} · due {p.due}{p.due! < today ? " (overdue)" : ""}</div>
                 </div>
                 <Button size="sm" variant="outline" onClick={() => { setPrefill({ title: p.title, url: p.url, pattern: p.pattern, difficulty: p.difficulty }); window.scrollTo({ top: 0, behavior: "smooth" }); }}>Re-solve</Button>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader><CardTitle>Next up</CardTitle></CardHeader>
+          <CardContent className="space-y-2">
+            {next.length === 0 && <p className="text-sm text-muted-foreground">Curriculum complete.</p>}
+            {next.map((p) => (
+              <div key={p.slug} className="flex items-center gap-2 text-sm rounded-lg border px-3 py-2">
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium truncate"><a href={p.url} target="_blank" rel="noreferrer" className="hover:underline underline-offset-2">{p.title}</a> <span className="text-xs text-muted-foreground">{p.difficulty}</span></div>
+                  <div className="text-xs text-muted-foreground truncate">{label(p.pattern)} · {p.reason} · {p.teaches}</div>
+                </div>
+                <Button size="sm" variant="outline" onClick={() => { setPrefill({ title: p.title, url: p.url, pattern: p.pattern, difficulty: p.difficulty }); window.scrollTo({ top: 0, behavior: "smooth" }); }}>Start</Button>
               </div>
             ))}
           </CardContent>

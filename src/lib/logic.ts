@@ -1,3 +1,4 @@
+import { CURRICULUM, CURRICULUM_BY_PATTERN, CurriculumProblem } from "./curriculum";
 import { addDays, diffDays, toManilaDate, todayManila } from "./dates";
 import {
   Application, AppState, AppStatus, Attempt, DAILY_TARGET_ATTEMPTS, DESIGN_TOPICS, DIFFICULTIES, Difficulty, Pattern,
@@ -256,4 +257,58 @@ export function buildReview(state: AppState, today = todayManila()): Review {
     design: { total: state.design_reps.length, thisWeek: designThisWeek, weekTarget: week ? WEEKS[week - 1].design : 0, expectedToDate: expected("design"), topicsCovered, topicsTotal: DESIGN_TOPICS.length - 1 },
     artifacts, applications, focus,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Curriculum recommendations
+
+export type Recommendation = CurriculumProblem & { reason: string };
+
+/** Plan-ordered pattern list: past weeks' weak/untouched first, then current week, then the rest of the plan. */
+export function patternPriority(state: AppState, today = todayManila()): { pattern: Pattern; week: number; reason: string }[] {
+  const week = currentWeek(state, today);
+  const daysInto = diffDays(today, state.plan_start);
+  const statuses = problemStatuses(state.attempts);
+  const info = (pattern: Pattern) => {
+    const ps = statuses.filter((p) => p.pattern === pattern);
+    const all = ps.flatMap((p) => p.attempts);
+    const clean = all.length ? all.filter((a) => a.outcome === "solved_clean").length / all.length : 0;
+    return { problems: ps.length, mastered: ps.filter((p) => p.mastered).length, clean };
+  };
+  const rows = WEEKS.flatMap((w) => w.patterns.map((pattern) => ({ pattern, week: w.number })));
+  const score = (r: { pattern: Pattern; week: number }) => {
+    const i = info(r.pattern);
+    const cur = week ?? (daysInto < 0 ? 0 : WEEKS.length + 1);
+    if (r.week < cur && i.problems === 0) return [0, r.week, `planned for week ${r.week}, not started`] as const;
+    if (r.week < cur && (i.clean < 0.5 || i.problems < 3) && !(i.mastered >= 3)) return [1, r.week, `week ${r.week} pattern still weak`] as const;
+    if (r.week === cur) return [2, r.week, `this week's pattern`] as const;
+    if (r.week < cur) return [4, r.week, `week ${r.week} — keep it warm`] as const;
+    return [3, r.week, `coming up in week ${r.week}`] as const;
+  };
+  return rows.map((r) => ({ r, s: score(r) })).sort((a, b) => a.s[0] - b.s[0] || a.s[1] - b.s[1]).map(({ r, s }) => ({ ...r, reason: s[2] }));
+}
+
+/** Next unattempted curriculum problems, round-robin across patterns in priority order. */
+export function recommendNext(state: AppState, n = 4, today = todayManila()): Recommendation[] {
+  const attempted = new Set(state.attempts.map((a) => a.problem_slug));
+  const queues = patternPriority(state, today).map((p) => ({ ...p, items: CURRICULUM_BY_PATTERN(p.pattern).filter((c) => !attempted.has(c.slug)) }));
+  const out: Recommendation[] = [];
+  // First pass: one per pattern for the top-priority tiers, so two problems a day hit two different gaps.
+  for (let round = 0; out.length < n; round++) {
+    let added = false;
+    for (const q of queues) {
+      const item = q.items[round];
+      if (!item) continue;
+      out.push({ ...item, reason: q.reason });
+      added = true;
+      if (out.length >= n) break;
+    }
+    if (!added) break;
+  }
+  return out;
+}
+
+export function curriculumStatus(state: AppState) {
+  const statuses = new Map(problemStatuses(state.attempts).map((p) => [p.slug, p]));
+  return CURRICULUM.map((c) => ({ ...c, status: statuses.get(c.slug) ?? null }));
 }

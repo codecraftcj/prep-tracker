@@ -17,11 +17,11 @@ export function AttemptForm({ prefill }: { prefill?: Prefill | null }) {
   const [running, setRunning] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const startRef = useRef<number | null>(null);
-  const [title, setTitle] = useState("");
-  const [url, setUrl] = useState("");
+  const [title, setTitle] = useState(prefill?.title ?? "");
+  const [url, setUrl] = useState(prefill?.url ?? "");
   const [source, setSource] = useState<Source>("neetcode");
-  const [pattern, setPattern] = useState<Pattern>("arrays");
-  const [difficulty, setDifficulty] = useState<Difficulty>("medium");
+  const [pattern, setPattern] = useState<Pattern>(prefill?.pattern ?? "arrays");
+  const [difficulty, setDifficulty] = useState<Difficulty>(prefill?.difficulty ?? "medium");
   const [outcome, setOutcome] = useState<Outcome>("solved_clean");
   const [blocker, setBlocker] = useState("");
   const [talked, setTalked] = useState(true);

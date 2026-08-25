@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { attemptsInWeek, buildReview, currentWeek, dueResolves, googleWarnings, masteryByPattern, problemStatuses, slugFromUrl, streak } from "@/lib/logic";
+import { attemptsInWeek, buildReview, patternPriority, recommendNext, currentWeek, dueResolves, googleWarnings, masteryByPattern, problemStatuses, slugFromUrl, streak } from "@/lib/logic";
 import { Application, Attempt, AppState, emptyState } from "@/lib/types";
 
 // All timestamps are 10:00 Manila (02:00Z) so the Manila date equals the ISO date.
@@ -173,5 +173,42 @@ describe("buildReview", () => {
     const r = buildReview(s, "2026-08-25");
     expect(r.focus).toEqual([expect.objectContaining({ level: "ok" })]);
     expect(r.daysToPracticeApply).toBe(55);
+  });
+});
+
+describe("curriculum recommendations", () => {
+  const base = (): AppState => ({ ...emptyState(), plan_start: "2026-08-24" });
+
+  it("in week 1 recommends this week's patterns in curriculum order, round-robin", () => {
+    const r = recommendNext(base(), 4, "2026-08-25");
+    expect(r.map((x) => x.pattern)).toEqual(["arrays", "two_pointers", "sliding_window", "hashing"]);
+    expect(r[0].slug).toBe("valid-sudoku");
+    expect(r[3].slug).toBe("contains-duplicate");
+    expect(r[0].reason).toMatch(/this week/);
+  });
+
+  it("puts untouched and weak past-week patterns before the current week", () => {
+    const s = base();
+    // week 1 patterns: arrays touched & solid-ish, two_pointers weak, sliding_window/hashing untouched
+    s.attempts = [
+      ...["a1", "a2", "a3", "a4"].map((slug) => attempt({ problem_slug: slug, pattern: "arrays", attempted_at: at("2026-08-25") })),
+      attempt({ problem_slug: "3sum", pattern: "two_pointers", outcome: "failed", blocker: "x", attempted_at: at("2026-08-26") }),
+    ];
+    const order = patternPriority(s, "2026-09-01").map((p) => p.pattern); // week 2
+    expect(order.slice(0, 2)).toEqual(["sliding_window", "hashing"]); // untouched first
+    expect(order[2]).toBe("two_pointers"); // weak
+    expect(order.slice(3, 6)).toEqual(["stack", "binary_search", "linked_list"]); // current week
+    expect(order[6]).toBe("trees"); // upcoming before "keep warm"
+    expect(order[order.length - 1]).toBe("arrays"); // solid past pattern goes last
+    const next = recommendNext(s, 3, "2026-09-01");
+    expect(next.map((x) => x.pattern)).toEqual(["sliding_window", "hashing", "two_pointers"]);
+    expect(next[2].slug).toBe("valid-palindrome"); // 3sum already attempted, so the first untried in order
+  });
+
+  it("skips attempted problems and stops when the curriculum is exhausted", () => {
+    const s = base();
+    s.attempts = [attempt({ problem_slug: "valid-sudoku", pattern: "arrays" })];
+    expect(recommendNext(s, 1, "2026-08-25")[0].slug).toBe("product-of-array-except-self");
+    expect(recommendNext(s, 500, "2026-08-25").length).toBe(156);
   });
 });

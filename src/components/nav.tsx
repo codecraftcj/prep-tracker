@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, Briefcase, CalendarDays, CheckSquare, Compass, ListChecks, Menu, Mic, Settings, Sun } from "lucide-react";
+import { BarChart3, BookOpen, Briefcase, CalendarDays, CheckSquare, Compass, ListChecks, Menu, Mic, Settings, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const ITEMS = [
@@ -9,6 +9,7 @@ export const ITEMS = [
   { href: "/problems", label: "Problems", icon: ListChecks },
   { href: "/review", label: "Review", icon: Compass },
   { href: "/applications", label: "Applications", icon: Briefcase },
+  { href: "/curriculum", label: "Curriculum", icon: BookOpen },
   { href: "/progress", label: "Progress", icon: BarChart3 },
   { href: "/mocks", label: "Mocks & Design", icon: Mic },
   { href: "/artifacts", label: "Artifacts", icon: CheckSquare },

@@ -47,6 +47,8 @@ Every timed attempt at a problem is a row. Fields:
 - `talked_aloud` — bool
 - `notes`
 
+**Curriculum:** `src/lib/curriculum.ts` is a NeetCode-150-based list (~157 problems) grouped by pattern, ordered within each pattern from "teaches the core move" to "combines it". `recommendNext()` picks the next unattempted problems round-robin across patterns in priority order: past-week patterns not started → past-week patterns still weak → this week's patterns → upcoming → solid past patterns. Today shows the top 4 as **Next up**; the **Curriculum** page shows the whole list with status. Problem slugs come from the URL, so logging via the app's links keeps curriculum and attempts linked.
+
 **Spaced repetition:** after any attempt, schedule re-solves at +3 days and +14 days. A problem is "mastered" when it has a solved_clean attempt at both re-solve intervals within target time (medium ≤ 15 min, hard ≤ 30 min, easy ≤ 8 min). Due re-solves appear on the daily view first.
 
 ### Mocks
@@ -98,6 +100,7 @@ Ten fixed weeks, defined as a constant in `src/lib/types.ts` (not stored data; e
 5. **Artifacts** — checklist.
 6. **Applications** — kanban by status, with the Google slot/cooldown warning.
 7. **Plan** — the 10 weeks, current week highlighted, target vs. actual attempts this week.
+9. **Curriculum** — every curriculum problem by pattern in priority order, with status (new / last attempt + next due / mastered), ★ on the recommended ones, one-tap "Log" that prefills the Today form via query params.
 8. **Review** — the whole program on one page: where I am (week, days to application windows), a rule-based **Focus now** list (overdue re-solves, pace, untouched/weak planned patterns, speed vs target, talk-aloud, mocks/design reps owed this week, STAR stories, overdue follow-ups), then coding / pattern / mock / portfolio scorecards. Logic in `buildReview()`; each week in `WEEKS` carries `patterns`, `mocks`, `design` targets that drive it.
 
 ## Conventions
