@@ -1,36 +1,23 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# prep-tracker
 
-## Getting Started
+Single-user tracker for a 10-week SWE interview prep program. Next.js 16 + shadcn/ui, deployed on Vercel free tier. No database: the whole app state is one JSON document in Upstash Redis (free tier), with a JSON file fallback for local dev. Spec: `CLAUDE.md`.
 
-First, run the development server:
+## Local dev
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev          # http://localhost:3000, data in .data/state.json, no login
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deploy (Vercel Hobby)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Push to GitHub, import the repo in Vercel.
+2. Storage → Marketplace → **Upstash** → Redis (free). Connect it to the project; it injects `KV_REST_API_URL` / `KV_REST_API_TOKEN` (or `UPSTASH_REDIS_REST_*`) — both are supported.
+3. Add env var `APP_PASSWORD` (any string). Without it the app is public.
+4. Deploy. Open the URL on your phone, sign in once — the cookie lasts a year.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Notes
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Dates are stored UTC and displayed in Asia/Manila.
+- Settings → Export JSON is the backup; Import replaces everything.
+- Rotating `APP_PASSWORD` logs out all devices.
