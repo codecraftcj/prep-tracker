@@ -36,5 +36,10 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.11"
+  },
+  "optionalDependencies": {
+    "@emnapi/core": "^1.11.3",
+    "@emnapi/runtime": "*",
+    "@emnapi/wasi-threads": "^2.0.1"
   }
 }
