@@ -12,7 +12,7 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - run: npm i -g npm@11.6.2 && npm ci
+      - run: npm ci
       - run: npm run lint
       - run: npx tsc --noEmit
       - run: npm test
