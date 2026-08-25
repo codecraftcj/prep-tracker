@@ -2,7 +2,7 @@ import "server-only";
 import { Redis } from "@upstash/redis";
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { AppState, emptyState } from "./types";
+import { AppState, SEED_ARTIFACTS, emptyState } from "./types";
 
 const KEY = "prep-tracker:state";
 const LOCAL_FILE = path.join(process.cwd(), ".data", "state.json");
@@ -13,11 +13,18 @@ function redis(): Redis | null {
   return url && token ? new Redis({ url, token }) : null;
 }
 
+/** Seed artifacts added after first launch are merged in by title; existing ones are left alone. */
+function withSeeds(state: AppState): AppState {
+  const have = new Set(state.artifacts.map((a) => a.title));
+  const missing = SEED_ARTIFACTS.filter((a) => !have.has(a.title)).map((a, i) => ({ id: `artifact-${Date.now()}-${i}`, ...a }));
+  return missing.length ? { ...state, artifacts: [...state.artifacts, ...missing] } : state;
+}
+
 export async function getState(): Promise<AppState> {
   const r = redis();
-  if (r) return (await r.get<AppState>(KEY)) ?? emptyState();
+  if (r) return withSeeds((await r.get<AppState>(KEY)) ?? emptyState());
   try {
-    return JSON.parse(await fs.readFile(LOCAL_FILE, "utf8")) as AppState;
+    return withSeeds(JSON.parse(await fs.readFile(LOCAL_FILE, "utf8")) as AppState);
   } catch {
     return emptyState();
   }
