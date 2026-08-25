@@ -98,6 +98,7 @@ Ten fixed weeks, defined as a constant in `src/lib/types.ts` (not stored data; e
 5. **Artifacts** — checklist.
 6. **Applications** — kanban by status, with the Google slot/cooldown warning.
 7. **Plan** — the 10 weeks, current week highlighted, target vs. actual attempts this week.
+8. **Review** — the whole program on one page: where I am (week, days to application windows), a rule-based **Focus now** list (overdue re-solves, pace, untouched/weak planned patterns, speed vs target, talk-aloud, mocks/design reps owed this week, STAR stories, overdue follow-ups), then coding / pattern / mock / portfolio scorecards. Logic in `buildReview()`; each week in `WEEKS` carries `patterns`, `mocks`, `design` targets that drive it.
 
 ## Conventions
 

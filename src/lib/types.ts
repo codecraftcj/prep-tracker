@@ -85,7 +85,16 @@ export type Application = {
   notes: string;
 };
 
-export type Week = { number: number; target: string };
+export type Week = {
+  number: number;
+  target: string;
+  /** Patterns introduced this week (drilled and expected to reach medium fluency). */
+  patterns: Pattern[];
+  /** Mocks expected this week. */
+  mocks: number;
+  /** System design reps expected this week. */
+  design: number;
+};
 
 export type AppState = {
   version: 1;
@@ -99,16 +108,16 @@ export type AppState = {
 
 /** The 10-week plan. Interview-bucket first; portfolio work is background (bg). */
 export const WEEKS: Week[] = [
-  { number: 1, target: "Arrays, two pointers, sliding window, hashing. Establish talk-aloud pacing. Résumé numbers (bg)." },
-  { number: 2, target: "Stack, binary search, linked list. First mock (coding). Draft 4 STAR stories." },
-  { number: 3, target: "Trees, heaps. Mock. First system design rep (URL shortener). 4 more STAR stories." },
-  { number: 4, target: "Backtracking + re-solve sweep of W1–3. Mock (behavioral). Design rep. All 8 STAR stories written." },
-  { number: 5, target: "Graphs. Mock (coding). Design rep. K8s project shipped (bg)." },
-  { number: 6, target: "1D DP, tries. Mock. Design rep. Post 1 (bg)." },
-  { number: 7, target: "2D DP, intervals. Mock (design). Design rep. OSS PR opened (bg)." },
-  { number: 8, target: "Greedy, bit manipulation, math + mixed timed sets. Mock. Design rep. LinkedIn + résumé v2." },
-  { number: 9, target: "Mixed timed sets daily. 2 mocks (coding + behavioral). Apply practice tier." },
-  { number: 10, target: "Mixed timed sets daily. 2 mocks. Apply target tier." },
+  { number: 1, target: "Arrays, two pointers, sliding window, hashing. Establish talk-aloud pacing. Résumé numbers (bg).", patterns: ["arrays", "two_pointers", "sliding_window", "hashing"], mocks: 0, design: 0 },
+  { number: 2, target: "Stack, binary search, linked list. First mock (coding). Draft 4 STAR stories.", patterns: ["stack", "binary_search", "linked_list"], mocks: 1, design: 0 },
+  { number: 3, target: "Trees, heaps. Mock. First system design rep (URL shortener). 4 more STAR stories.", patterns: ["trees", "heaps"], mocks: 1, design: 1 },
+  { number: 4, target: "Backtracking + re-solve sweep of W1–3. Mock (behavioral). Design rep. All 8 STAR stories written.", patterns: ["backtracking"], mocks: 1, design: 1 },
+  { number: 5, target: "Graphs. Mock (coding). Design rep. K8s project shipped (bg).", patterns: ["graphs"], mocks: 1, design: 1 },
+  { number: 6, target: "1D DP, tries. Mock. Design rep. Post 1 (bg).", patterns: ["dp_1d", "tries"], mocks: 1, design: 1 },
+  { number: 7, target: "2D DP, intervals. Mock (design). Design rep. OSS PR opened (bg).", patterns: ["dp_2d", "intervals"], mocks: 1, design: 1 },
+  { number: 8, target: "Greedy, bit manipulation, math + mixed timed sets. Mock. Design rep. LinkedIn + résumé v2.", patterns: ["greedy", "bit_manipulation", "math"], mocks: 1, design: 1 },
+  { number: 9, target: "Mixed timed sets daily. 2 mocks (coding + behavioral). Apply practice tier.", patterns: [], mocks: 2, design: 1 },
+  { number: 10, target: "Mixed timed sets daily. 2 mocks. Apply target tier.", patterns: [], mocks: 2, design: 1 },
 ];
 
 export const SEED_ARTIFACTS: Omit<Artifact, "id">[] = [
