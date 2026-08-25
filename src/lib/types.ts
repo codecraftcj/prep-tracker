@@ -112,15 +112,16 @@ export const WEEKS: Week[] = [
 ];
 
 export const SEED_ARTIFACTS: Omit<Artifact, "id">[] = [
-  "Résumé v2 with numbers",
-  "Non-scraping K8s project (shipped + README)",
+  "Résumé with numbers, framed entry/mid-level",
+  "GitHub profile: bio, README, 3 pinned repos, noise archived",
+  "interview-prep repo organised by pattern, fed daily from attempts",
+  "prep-tracker public: tests + CI + README screenshots",
+  "Showcase project public (clean README, tests, design notes)",
   "Open-source PR merged (Scrapy / Playwright-Python / curl_cffi)",
-  "Post: job-per-scrape K8s architecture",
-  "Post: BigQuery time-travel recovery",
-  "Post: anti-bot at scale (optional)",
   "LinkedIn headline + about rewritten",
   "8 STAR behavioral stories written",
-  "GitHub activity streak visible",
+  "GitHub activity streak visible (10 weeks)",
+  "Post: one technical write-up (optional)",
 ].map((title) => ({ title, status: "todo" as const, link: "", completed_at: null }));
 
 export function emptyState(): AppState {

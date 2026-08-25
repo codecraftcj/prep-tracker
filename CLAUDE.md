@@ -58,16 +58,17 @@ Every timed attempt at a problem is a row. Fields:
 - `date`, `duration_minutes`, `notes`, `weak_areas` text
 
 ### Artifacts (portfolio checklist)
-Fixed list, each with status todo / in_progress / done, link, and completion date:
-- Résumé v2 with numbers
-- Non-scraping K8s project (shipped + README)
+Positioning: **entry-to-mid-level SWE**. The 7 freelance years are supporting evidence (reliability, real-world exposure), not the pitch. The profile must show fundamentals, clean tested code, consistency, and finished projects — not architecture or scale. Fixed list, each with status todo / in_progress / done, link, and completion date:
+- Résumé with numbers, framed entry/mid-level
+- GitHub profile: bio, README, 3 pinned repos (interview-prep, prep-tracker, showcase), noise archived
+- interview-prep repo organised by pattern, fed daily from attempts (this also produces the streak)
+- prep-tracker public: tests + CI + README screenshots
+- Showcase project public (clean README, tests, design notes) — replaces the K8s project
 - Open-source PR merged (Scrapy / Playwright-Python / curl_cffi)
-- Post: job-per-scrape K8s architecture
-- Post: BigQuery time-travel recovery
-- Post: anti-bot at scale (optional)
 - LinkedIn headline + about rewritten
 - 8 STAR behavioral stories written
-- GitHub activity streak visible
+- GitHub activity streak visible (10 weeks)
+- Post: one technical write-up (optional)
 
 ### Applications
 - `company`, `role`, `tier` (practice / target / google), `applied_at`, `referral` bool
@@ -119,9 +120,9 @@ How I work, so that collaborators (human or AI) can match it.
 
 **Pull requests.** Use `.github/PULL_REQUEST_TEMPLATE.md`. Title follows the commit format. Body: what/why, how it was verified (screenshots for UI, the exact command for logic), anything out of scope. PRs stay under ~400 lines of diff; split otherwise. Self-review before requesting review.
 
-**Quality gate before any commit.** `npm run lint` and `npx tsc --noEmit` clean; `npm run build` for anything touching routing, actions, or config. No `any`, no unused exports, no console noise.
+**Quality gate before any commit.** `npm run lint`, `npm run typecheck`, and `npm test` clean (CI runs the same on every push/PR); `npm run build` for anything touching routing, actions, or config. No `any`, no unused exports, no console noise.
 
-**Code style.** Prettier defaults (2-space, double quotes, semicolons). Server Components by default; `"use client"` only where there is state or browser APIs. Pure domain logic lives in `src/lib/logic.ts` and has no React or I/O in it. Prefer a native element over a library component when it works better on a phone (e.g. `<select>`).
+**Code style.** Prettier defaults (2-space, double quotes, semicolons). Server Components by default; `"use client"` only where there is state or browser APIs. Pure domain logic lives in `src/lib/logic.ts`, has no React or I/O in it, and is covered by `src/lib/__tests__/logic.test.ts` (Vitest). Prefer a native element over a library component when it works better on a phone (e.g. `<select>`).
 
 **Changes to the plan or the mastery rule** are code changes to `src/lib/types.ts` / `src/lib/logic.ts` with a `docs:` or `feat(logic):` commit that also updates this file.
 
