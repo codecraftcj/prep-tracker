@@ -6,11 +6,18 @@ import { Field } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 
 export function Settings({ planStart, backend, authEnabled }: { planStart: string; backend: string; authEnabled: boolean }) {
   const [start, setStart] = useState(planStart);
   const [pending, run] = useTransition();
   const file = useRef<HTMLInputElement>(null);
+  const [dark, setDark] = useState(() => typeof document === "undefined" || document.documentElement.classList.contains("dark"));
+  function toggleTheme(v: boolean) {
+    setDark(v);
+    document.documentElement.classList.toggle("dark", v);
+    try { localStorage.setItem("theme", v ? "dark" : "light"); } catch {}
+  }
 
   async function download() {
     const json = await exportState();
@@ -31,6 +38,12 @@ export function Settings({ planStart, backend, authEnabled }: { planStart: strin
         <CardContent className="flex gap-2 items-end">
           <Field label="Week 1 start (Monday)" className="flex-1"><Input type="date" value={start} onChange={(e) => setStart(e.target.value)} /></Field>
           <Button disabled={pending || start === planStart} onClick={() => run(async () => { await setPlanStart(start); toast.success("Saved"); })}>Save</Button>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader><CardTitle>Appearance</CardTitle></CardHeader>
+        <CardContent>
+          <label className="flex items-center gap-2 text-sm"><Switch checked={dark} onCheckedChange={toggleTheme} /> Dark mode <span className="text-muted-foreground">(this device)</span></label>
         </CardContent>
       </Card>
       <Card>

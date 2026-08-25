@@ -9,6 +9,7 @@ export type ChartData = {
   outcomes: { outcome: string; count: number }[];
 };
 
+const TT = { background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--popover-foreground)" };
 const C = { a: "var(--chart-1)", b: "var(--chart-2)", c: "var(--chart-3)", d: "var(--chart-4)" };
 
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
@@ -27,9 +28,9 @@ export function Charts({ data }: { data: ChartData }) {
         <ResponsiveContainer>
           <BarChart data={data.perDay}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="day" tickFormatter={(d: string) => d.slice(5)} fontSize={10} interval={4} />
-            <YAxis allowDecimals={false} fontSize={10} width={28} />
-            <Tooltip />
+            <XAxis dataKey="day" tickFormatter={(d: string) => d.slice(5)} fontSize={10} stroke="var(--muted-foreground)" interval={4} />
+            <YAxis allowDecimals={false} fontSize={10} stroke="var(--muted-foreground)" width={28} />
+            <Tooltip contentStyle={TT} />
             <Bar dataKey="attempts" fill={C.a} radius={2} />
           </BarChart>
         </ResponsiveContainer>
@@ -38,9 +39,9 @@ export function Charts({ data }: { data: ChartData }) {
         <ResponsiveContainer>
           <LineChart data={data.medianByDifficulty}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="week" fontSize={10} />
-            <YAxis fontSize={10} width={28} />
-            <Tooltip />
+            <XAxis dataKey="week" fontSize={10} stroke="var(--muted-foreground)" />
+            <YAxis fontSize={10} stroke="var(--muted-foreground)" width={28} />
+            <Tooltip contentStyle={TT} />
             <Line dataKey="easy" stroke={C.b} connectNulls dot={false} />
             <Line dataKey="medium" stroke={C.a} connectNulls dot={false} />
             <Line dataKey="hard" stroke={C.c} connectNulls dot={false} />
@@ -50,9 +51,9 @@ export function Charts({ data }: { data: ChartData }) {
       <Panel title="Mastery % by pattern">
         <ResponsiveContainer>
           <BarChart data={data.mastery} layout="vertical" margin={{ left: 40 }}>
-            <XAxis type="number" domain={[0, 100]} fontSize={10} />
-            <YAxis type="category" dataKey="pattern" fontSize={10} width={80} />
-            <Tooltip formatter={(v, _n, p) => [`${v}% (${p.payload.mastered}/${p.payload.total})`, "mastered"]} />
+            <XAxis type="number" domain={[0, 100]} fontSize={10} stroke="var(--muted-foreground)" />
+            <YAxis type="category" dataKey="pattern" fontSize={10} stroke="var(--muted-foreground)" width={80} />
+            <Tooltip contentStyle={TT} formatter={(v, _n, p) => [`${v}% (${p.payload.mastered}/${p.payload.total})`, "mastered"]} />
             <Bar dataKey="pct" fill={C.d} radius={2} />
           </BarChart>
         </ResponsiveContainer>
@@ -61,9 +62,9 @@ export function Charts({ data }: { data: ChartData }) {
         <ResponsiveContainer>
           <BarChart data={data.outcomes}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="outcome" fontSize={10} />
-            <YAxis allowDecimals={false} fontSize={10} width={28} />
-            <Tooltip />
+            <XAxis dataKey="outcome" fontSize={10} stroke="var(--muted-foreground)" />
+            <YAxis allowDecimals={false} fontSize={10} stroke="var(--muted-foreground)" width={28} />
+            <Tooltip contentStyle={TT} />
             <Bar dataKey="count" fill={C.b} radius={2} />
           </BarChart>
         </ResponsiveContainer>
