@@ -109,13 +109,13 @@ export type AppState = {
 /** The 10-week plan. Interview-bucket first; portfolio work is background (bg). */
 export const WEEKS: Week[] = [
   { number: 1, target: "Arrays, two pointers, sliding window, hashing. Establish talk-aloud pacing. Résumé numbers (bg).", patterns: ["arrays", "two_pointers", "sliding_window", "hashing"], mocks: 0, design: 0 },
-  { number: 2, target: "Stack, binary search, linked list. First mock (coding). Draft 4 STAR stories.", patterns: ["stack", "binary_search", "linked_list"], mocks: 1, design: 0 },
+  { number: 2, target: "Stack, binary search, linked list. First mock (coding). Draft 4 STAR stories. Data: Spark basics (bg).", patterns: ["stack", "binary_search", "linked_list"], mocks: 1, design: 0 },
   { number: 3, target: "Trees, heaps. Mock. First system design rep (URL shortener). 4 more STAR stories.", patterns: ["trees", "heaps"], mocks: 1, design: 1 },
-  { number: 4, target: "Backtracking + re-solve sweep of W1–3. Mock (behavioral). Design rep. All 8 STAR stories written.", patterns: ["backtracking"], mocks: 1, design: 1 },
-  { number: 5, target: "Graphs. Mock (coding). Design rep. K8s project shipped (bg).", patterns: ["graphs"], mocks: 1, design: 1 },
-  { number: 6, target: "1D DP, tries. Mock. Design rep. Post 1 (bg).", patterns: ["dp_1d", "tries"], mocks: 1, design: 1 },
-  { number: 7, target: "2D DP, intervals. Mock (design). Design rep. OSS PR opened (bg).", patterns: ["dp_2d", "intervals"], mocks: 1, design: 1 },
-  { number: 8, target: "Greedy, bit manipulation, math + mixed timed sets. Mock. Design rep. LinkedIn + résumé v2.", patterns: ["greedy", "bit_manipulation", "math"], mocks: 1, design: 1 },
+  { number: 4, target: "Backtracking + re-solve sweep of W1–3. Mock (behavioral). Design rep. All 8 STAR stories written. Data: PySpark job done (bg).", patterns: ["backtracking"], mocks: 1, design: 1 },
+  { number: 5, target: "Graphs. Mock (coding). Design rep. Showcase project (bg). Data: Snowflake trial, start cheat sheet (bg).", patterns: ["graphs"], mocks: 1, design: 1 },
+  { number: 6, target: "1D DP, tries. Mock. Design rep on warehouse ingestion (use the Snowflake work).", patterns: ["dp_1d", "tries"], mocks: 1, design: 1 },
+  { number: 7, target: "2D DP, intervals. Mock (design). Design rep. OSS PR opened (bg). Data: cheat sheet done (bg).", patterns: ["dp_2d", "intervals"], mocks: 1, design: 1 },
+  { number: 8, target: "Greedy, bit manipulation, math + mixed timed sets. Mock. Design rep. Résumé v2. Data: one STAR story from the track.", patterns: ["greedy", "bit_manipulation", "math"], mocks: 1, design: 1 },
   { number: 9, target: "Mixed timed sets daily. 2 mocks (coding + behavioral). Apply practice tier.", patterns: [], mocks: 2, design: 1 },
   { number: 10, target: "Mixed timed sets daily. 2 mocks. Apply target tier.", patterns: [], mocks: 2, design: 1 },
 ];
@@ -127,6 +127,8 @@ export const SEED_ARTIFACTS: Omit<Artifact, "id">[] = [
   "prep-tracker public: tests + CI + README screenshots",
   "Showcase project public (clean README, tests, design notes)",
   "Open-source PR merged (Scrapy / Playwright-Python / curl_cffi)",
+  "PySpark job on a public dataset, README explains the plan",
+  "BigQuery → Snowflake cheat sheet, each mapping tried in a trial account",
   "LinkedIn headline + about rewritten",
   "8 STAR behavioral stories written",
   "GitHub activity streak visible (10 weeks)",

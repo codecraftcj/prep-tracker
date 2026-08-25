@@ -18,6 +18,15 @@ Interview-bucket skills to train deliberately:
 - System design as a conversation: 45-min reps with a fixed framework (requirements → estimates → API → data → high-level → deep dive → trade-offs).
 - Behavioral: 8 STAR stories written by week 4 and rehearsed aloud in mocks.
 
+### Data skills track (background, capped)
+
+Target companies run Spark and increasingly Snowflake; my warehouse experience is BigQuery. Two background goals, **≤ 3 h/week combined**, never displacing a timed set or a mock:
+
+1. **Spark (PySpark).** Aim: comfortably explain and write the basics in an interview — DataFrame API, lazy evaluation, shuffles and why they're expensive, partitions, joins (broadcast vs sort-merge), caching, reading the Spark UI, when Spark is the wrong tool. Vehicle: one small PySpark job over a public dataset, run locally (`pip install pyspark`), with a README that explains the plan it produced.
+2. **BigQuery → Snowflake translation.** Aim: be able to say "in BigQuery I did X; in Snowflake that's Y" for the things I actually did: partitioning/clustering → micro-partitions + clustering keys; slots/on-demand → virtual warehouses and credits; time travel (I recovered a table with it) → Time Travel + Fail-safe + zero-copy clones; scheduled queries → Tasks + Streams; external tables/GCS loads → stages + COPY INTO + Snowpipe; authorized views/RLS → secure views + row-access policies; UDFs → JS/Python UDFs + Snowpark. Vehicle: a one-page cheat sheet in the showcase repo, plus a Snowflake trial account where each mapping is tried once.
+
+Suggested slots: W2–4 Spark, W5–7 Snowflake, W8 turn both into one "warehouse & processing" STAR-style story for behavioral/design rounds. These feed the system-design reps ("log pipeline", "warehouse ingestion") and the showcase project.
+
 ## Non-goals
 
 - Not a product. No auth beyond a single login, no multi-tenant, no marketing pages.
@@ -26,13 +35,14 @@ Interview-bucket skills to train deliberately:
 
 ## Stack
 
-- **Next.js 15** (App Router, TypeScript), deployed on Vercel
-- **Supabase** (Postgres, Auth for single-user login, Row Level Security on)
-- **Tailwind** + shadcn/ui, minimal styling
-- **Recharts** for the few charts that matter
-- No ORM beyond the Supabase client. Plain SQL migrations in `supabase/migrations/`.
+- **Next.js 16** (App Router, TypeScript, Server Components, server actions), Node 24, deployed on Vercel Hobby
+- **Upstash Redis** (Vercel Marketplace, free tier) holds the whole app state as **one JSON document** at key `prep-tracker:state`. No schema, no migrations. Locally, with no Redis env vars, state persists to `.data/state.json` (gitignored).
+- **Tailwind CSS 4 + shadcn/ui** (base-nova style, Base UI primitives — note `render` prop, not `asChild`). Native `<select>` for forms because it's better on a phone. Dark mode by default, per-device toggle.
+- **Recharts** for the four Progress charts only.
+- **Vitest** for `src/lib/logic.ts`; GitHub Actions runs lint → typecheck → test → build.
+- Single password gate: `APP_PASSWORD` env var, HMAC cookie checked in `src/proxy.ts`. Unset locally = no login.
 
-Chosen because I already ship Next.js + Supabase (nir-u.com). Keep the same conventions as that repo.
+Supabase was in the original spec and was dropped on 2026-08-25 for a barebones, free, cross-device setup.
 
 ## Core domain
 
@@ -67,6 +77,8 @@ Positioning: **entry-to-mid-level SWE**. The 7 freelance years are supporting ev
 - prep-tracker public: tests + CI + README screenshots
 - Showcase project public (clean README, tests, design notes) — replaces the K8s project
 - Open-source PR merged (Scrapy / Playwright-Python / curl_cffi)
+- PySpark job on a public dataset, README explains the plan (data track)
+- BigQuery → Snowflake cheat sheet, each mapping tried in a trial account (data track)
 - LinkedIn headline + about rewritten
 - 8 STAR behavioral stories written
 - GitHub activity streak visible (10 weeks)
@@ -81,17 +93,17 @@ Positioning: **entry-to-mid-level SWE**. The 7 freelance years are supporting ev
 ### Weekly plan
 Ten fixed weeks, defined as a constant in `src/lib/types.ts` (not stored data; edit in code, ship with a commit). Week 1 starts on the Monday set in Settings. Daily target: 2 timed problems, talk-aloud. Portfolio artifacts capped at ~2 h/week.
 - W1: arrays, two pointers, sliding window, hashing. Establish the talk-aloud pacing ritual. Résumé numbers (bg).
-- W2: stack, binary search, linked list. **First mock (coding).** Draft 4 STAR stories.
+- W2: stack, binary search, linked list. **First mock (coding).** Draft 4 STAR stories. Data: Spark basics (bg).
 - W3: trees, heaps. Mock. **First system design rep** (URL shortener) using the framework. 4 more STAR stories.
-- W4: backtracking + re-solve sweep of W1–3. Mock (behavioral). Design rep. All 8 STAR stories written.
-- W5: graphs. Mock (coding). Design rep. K8s project shipped (bg).
-- W6: 1D DP, tries. Mock. Design rep. Post 1 (bg).
-- W7: 2D DP, intervals. Mock (design). Design rep. OSS PR opened (bg).
-- W8: greedy, bit manipulation, math + mixed timed sets. Mock. Design rep. LinkedIn + résumé v2.
+- W4: backtracking + re-solve sweep of W1–3. Mock (behavioral). Design rep. All 8 STAR stories written. Data: PySpark job done (bg).
+- W5: graphs. Mock (coding). Design rep. Showcase project (bg). Data: Snowflake trial, start cheat sheet (bg).
+- W6: 1D DP, tries. Mock. Design rep. Design rep topic: warehouse ingestion (use the Snowflake work).
+- W7: 2D DP, intervals. Mock (design). Design rep. OSS PR opened (bg). Data: cheat sheet done (bg).
+- W8: greedy, bit manipulation, math + mixed timed sets. Mock. Design rep. Résumé v2. Data: one STAR story from the track.
 - W9: mixed timed sets daily, 2 mocks (coding + behavioral). Apply practice tier.
 - W10: mixed timed sets daily, 2 mocks. Apply target tier.
 
-## Screens (v1)
+## Screens
 
 1. **Today** — due re-solves, today's target (2 problems), quick-add attempt form with a built-in timer, streak count. This is the page I open every morning. Must work well on a phone.
 2. **Problems** — table of all problems with mastery state, filter by pattern/difficulty/outcome, per-pattern mastery %.
@@ -105,13 +117,13 @@ Ten fixed weeks, defined as a constant in `src/lib/types.ts` (not stored data; e
 
 ## Conventions
 
-- Server Components by default; client components only for the timer and forms.
-- All writes through server actions in `app/actions/`. No API routes unless needed for the timer.
-- Dates stored UTC, displayed in Asia/Manila.
-- Every table has `id uuid`, `created_at`, `updated_at`. RLS: `user_id = auth.uid()`.
-- Migrations are hand-written SQL, one per feature, never edited after applying.
+- Server Components by default; `"use client"` only for the timer, forms, tables with local filter state, charts, nav.
+- All writes through server actions in `src/app/actions/` calling `mutate()` in `src/lib/store.ts` (read-modify-write of the whole doc; single user, last write wins). No API routes.
+- Pure domain rules in `src/lib/logic.ts` — no React, no I/O — with tests in `src/lib/__tests__/`. The plan (`WEEKS`), curriculum (`src/lib/curriculum.ts`) and artifact seed are code constants, not stored data.
+- Dates stored as ISO UTC, displayed and bucketed in Asia/Manila (`src/lib/dates.ts`).
+- Every record has a `crypto.randomUUID()` id. Problem identity is the URL slug (`slugFromUrl`).
 - Keep components small; no premature abstraction. Three similar forms is fine.
-- Commit messages: `feat:`, `fix:`, `chore:`. Small commits.
+- When a rule or threshold changes, update **three** places: the constant/logic, `CLAUDE.md`, and the in-app Help page (`src/app/help/page.tsx`).
 
 ## Working standards
 
@@ -130,19 +142,15 @@ How I work, so that collaborators (human or AI) can match it.
 
 **Changes to the plan or the mastery rule** are code changes to `src/lib/types.ts` / `src/lib/logic.ts` with a `docs:` or `feat(logic):` commit that also updates this file.
 
-## Definition of done for v1
+## Status
 
-- Can log a timed attempt from my phone in under 20 seconds.
-- Today page correctly surfaces +3d and +14d re-solves.
-- Mastery % by pattern is accurate and matches the rule above.
-- Applications kanban with the Google warning.
-- Deployed on Vercel, seeded with the 10-week plan and the artifact checklist.
+v1 is built and public at github.com/codecraftcj/prep-tracker (CI green). Not yet deployed to Vercel; running locally with file storage. Definition-of-done items met: sub-20-second phone logging, +3d/+14d re-solves on Today, mastery by pattern, applications kanban with Google warning, seeded plan and artifacts. Added beyond v1: Review page (Focus list), Curriculum with recommendations, Help page, dark mode.
 
-Build the Today page and the attempts table first. Everything else is secondary.
+**Next:** deploy to Vercel with Upstash + `APP_PASSWORD`, then Export/Import the local JSON.
 
-## Out of scope until v1 ships
+## Out of scope
 
-Import from LeetCode/NeetCode, export, dark mode polish, notifications, any AI-assisted review of blockers.
+Import from LeetCode/NeetCode, notifications, multi-user, any AI-assisted review of blockers.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
