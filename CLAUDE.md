@@ -123,6 +123,7 @@ Ten fixed weeks, defined as a constant in `src/lib/types.ts` (not stored data; e
 - Dates stored as ISO UTC, displayed and bucketed in Asia/Manila (`src/lib/dates.ts`).
 - Every record has a `crypto.randomUUID()` id. Problem identity is the URL slug (`slugFromUrl`).
 - Keep components small; no premature abstraction. Three similar forms is fine.
+- **Never write to or delete `.data/state.json`** — that is my real data. For sample data during development, run the dev server with `PREP_DATA_FILE=/tmp/…/sample.json`.
 - When a rule or threshold changes, update **three** places: the constant/logic, `CLAUDE.md`, and the in-app Help page (`src/app/help/page.tsx`).
 
 ## Working standards

@@ -5,7 +5,7 @@ import path from "node:path";
 import { AppState, SEED_ARTIFACTS, emptyState } from "./types";
 
 const KEY = "prep-tracker:state";
-const LOCAL_FILE = path.join(process.cwd(), ".data", "state.json");
+const LOCAL_FILE = process.env.PREP_DATA_FILE ?? path.join(process.cwd(), ".data", "state.json");
 
 function redis(): Redis | null {
   const url = process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
