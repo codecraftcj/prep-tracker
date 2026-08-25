@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Field, NativeSelect } from "@/components/form";
 import { fmtDuration } from "@/lib/dates";
+import { cn } from "@/lib/utils";
 import { DIFFICULTIES, Difficulty, OUTCOMES, Outcome, PATTERNS, Pattern, SOURCES, Source } from "@/lib/types";
 
 type Prefill = { title: string; url: string; pattern: Pattern; difficulty: Difficulty; source?: Source };
@@ -67,8 +68,8 @@ export function AttemptForm({ prefill }: { prefill?: Prefill | null }) {
 
   return (
     <form onSubmit={submit} className="space-y-3">
-      <div className="flex items-center gap-3">
-        <span className="font-mono text-4xl tabular-nums flex-1">{fmtDuration(elapsed)}</span>
+      <div className="flex items-center gap-3 rounded-xl bg-muted/60 p-3">
+        <span className={cn("font-mono text-4xl tabular-nums flex-1 pl-1", running && "text-foreground", !running && elapsed === 0 && "text-muted-foreground")}>{fmtDuration(elapsed)}</span>
         <Button type="button" variant={running ? "secondary" : "default"} onClick={toggle} className="min-w-20">{running ? "Pause" : elapsed ? "Resume" : "Start"}</Button>
         <Button type="button" variant="ghost" onClick={reset} disabled={!elapsed && !running}>Reset</Button>
       </div>
@@ -85,7 +86,7 @@ export function AttemptForm({ prefill }: { prefill?: Prefill | null }) {
         <Field label="Notes" className="col-span-2"><Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} /></Field>
         <label className="col-span-2 flex items-center gap-2 text-sm"><Switch checked={talked} onCheckedChange={setTalked} /> Talked aloud</label>
       </div>
-      <Button type="submit" className="w-full" disabled={pending || !title.trim()}>{pending ? "Saving…" : "Log attempt"}</Button>
+      <Button type="submit" size="lg" className="w-full" disabled={pending || !title.trim()}>{pending ? "Saving…" : "Log attempt"}</Button>
     </form>
   );
 }

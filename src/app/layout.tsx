@@ -1,5 +1,9 @@
 import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+
+const sans = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
+const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
 import { Nav } from "@/components/nav";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -10,10 +14,10 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1, view
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className="h-full antialiased">
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+    <html lang="en" className={`${sans.variable} ${mono.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col bg-muted/40 text-foreground font-sans">
         <Nav />
-        <main className="flex-1 w-full max-w-5xl mx-auto p-4 pb-24 md:pb-8 space-y-6">{children}</main>
+        <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-5 pb-24 md:pb-10 space-y-6">{children}</main>
         <Toaster position="top-center" />
       </body>
     </html>
