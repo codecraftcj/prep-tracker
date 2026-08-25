@@ -21,6 +21,8 @@ A small, single-user web app for tracking a 10-week software-engineering intervi
 - The domain rules live in [`src/lib/logic.ts`](src/lib/logic.ts) as pure functions with [tests](src/lib/__tests__/logic.test.ts); pages are Server Components that call them; all writes go through server actions in [`src/app/actions/`](src/app/actions/).
 - Single password gate via [`src/proxy.ts`](src/proxy.ts); dates stored UTC, shown in Asia/Manila.
 
+There is an in-app **Help** page (`/help`) describing the daily routine, outcome definitions, the re-solve/mastery rule, and how recommendations are prioritised.
+
 ## Development
 
 ```bash

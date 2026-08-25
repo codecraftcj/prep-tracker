@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, BookOpen, Briefcase, CalendarDays, CheckSquare, Compass, ListChecks, Menu, Mic, Settings, Sun } from "lucide-react";
+import { BarChart3, BookOpen, Briefcase, CalendarDays, CheckSquare, CircleHelp, Compass, ListChecks, Menu, Mic, Settings, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const ITEMS = [
@@ -15,6 +15,7 @@ export const ITEMS = [
   { href: "/artifacts", label: "Artifacts", icon: CheckSquare },
   { href: "/plan", label: "Plan", icon: CalendarDays },
   { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/help", label: "Help", icon: CircleHelp },
 ];
 const MOBILE = [...ITEMS.slice(0, 4), { href: "/more", label: "More", icon: Menu }];
 
