@@ -1,8 +1,12 @@
 import { PageTitle } from "@/components/form";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { fmtDuration } from "@/lib/dates";
-import { buildReview, type Focus } from "@/lib/logic";
+import Link from "next/link";
+import { ExternalLink as ExtIcon } from "lucide-react";
+import { buildReview, dueResolves, problemStatuses, recommendNext, type Focus } from "@/lib/logic";
+import { LINKS } from "@/lib/links";
 import { getState } from "@/lib/store";
 import { TARGET_SECONDS, WEEKS, label } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -24,6 +28,14 @@ const STATUS: Record<string, string> = { untouched: "bg-muted text-muted-foregro
 export default async function ReviewPage() {
   const state = await getState();
   const r = buildReview(state);
+  const due = dueResolves(problemStatuses(state.attempts), r.today);
+  const next = recommendNext(state, 4, r.today);
+  const weekMocks = r.mocks.weekTarget - r.mocks.thisWeek, weekDesign = r.design.weekTarget - r.design.thisWeek;
+  const groups = [
+    { key: "daily" as const, title: "Every day" },
+    { key: "weekly" as const, title: weekMocks > 0 || weekDesign > 0 ? `This week: ${[weekMocks > 0 && `${weekMocks} mock${weekMocks > 1 ? "s" : ""}`, weekDesign > 0 && `${weekDesign} design rep`].filter(Boolean).join(", ")} still to do` : "This week" },
+    { key: "background" as const, title: "Background (≤ 3 h/week)" },
+  ];
   const pct = (n: number, d: number) => (d ? Math.round((100 * n) / d) : 0);
 
   return (
@@ -36,6 +48,55 @@ export default async function ReviewPage() {
         <Stat label="Apply · practice tier" value={r.daysToPracticeApply > 0 ? `${r.daysToPracticeApply}d` : "open"} sub="week 9" />
         <Stat label="Apply · target tier" value={r.daysToTargetApply > 0 ? `${r.daysToTargetApply}d` : "open"} sub="week 10" />
         <Stat label="Mastered" value={`${r.attempts.mastered}/${r.attempts.problems}`} sub={`${r.attempts.total} attempts total`} />
+      </div>
+
+      {/* Set up for the day */}
+      <div className="grid md:grid-cols-2 gap-4 items-start">
+        <Card>
+          <CardHeader><CardTitle>Today&apos;s problems</CardTitle></CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            {due.length > 0 && (
+              <div>
+                <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Re-solves due ({due.length}) — first</div>
+                {due.slice(0, 4).map((p) => (
+                  <div key={p.slug} className="flex items-center gap-2 rounded-lg border px-3 py-1.5 mb-1">
+                    <a href={p.url || "#"} target="_blank" rel="noreferrer" className="flex-1 truncate hover:underline underline-offset-2">{p.title}</a>
+                    <span className="text-xs text-muted-foreground">{label(p.pattern)} · {p.stage === 0 ? "+3d" : "+14d"}{p.due! < r.today ? " · overdue" : ""}</span>
+                  </div>
+                ))}
+                {due.length > 4 && <div className="text-xs text-muted-foreground">+{due.length - 4} more on Today</div>}
+              </div>
+            )}
+            <div>
+              <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Next up{due.length ? " — then" : ""} ({r.attempts.thisWeek}/{r.attempts.weekTarget} this week)</div>
+              {next.map((p) => (
+                <div key={p.slug} className="flex items-center gap-2 rounded-lg border px-3 py-1.5 mb-1">
+                  <a href={p.url} target="_blank" rel="noreferrer" className="flex-1 truncate hover:underline underline-offset-2">{p.title} <span className="text-xs text-muted-foreground">{p.difficulty}</span></a>
+                  <span className="text-xs text-muted-foreground truncate max-w-40">{label(p.pattern)} · {p.reason}</span>
+                </div>
+              ))}
+            </div>
+            <Link href="/" className={cn(buttonVariants({ size: "sm" }), "w-full")}>Open Today and start the timer</Link>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader><CardTitle>Reminders &amp; sites</CardTitle></CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            {groups.map((g) => (
+              <div key={g.key}>
+                <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">{g.title}</div>
+                {LINKS.filter((l) => l.group === g.key).map((l) => (
+                  <a key={l.url} href={l.url} target="_blank" rel="noreferrer" className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-muted/60">
+                    <ExtIcon className="size-3.5 text-muted-foreground shrink-0" />
+                    <span className="font-medium shrink-0">{l.label}</span>
+                    <span className="text-xs text-muted-foreground truncate">{l.note}</span>
+                  </a>
+                ))}
+              </div>
+            ))}
+            <p className="text-[11px] text-muted-foreground">Edit this list in <code>src/lib/links.ts</code>.</p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Focus */}

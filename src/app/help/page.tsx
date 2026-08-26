@@ -21,10 +21,11 @@ export default function HelpPage() {
 
       <Section title="The daily routine (≈ 45 min)">
         <ol className="list-decimal pl-5 space-y-1">
-          <li>Open <L href="/">Today</L>. If anything is under <b>Due re-solves</b>, do those first — tap <b>Re-solve</b> to prefill the form.</li>
+          <li>Open <L href="/review">Review</L>. <b>Today&apos;s problems</b> lists due re-solves then Next up; <b>Reminders &amp; sites</b> has every external site with why you&apos;re going there; <b>Focus now</b> says what&apos;s slipping.</li>
+          <li>Go to <L href="/">Today</L>. If anything is under <b>Due re-solves</b>, do those first — tap <b>Re-solve</b> to prefill the form.</li>
           <li>Then pick from <b>Next up</b> (tap <b>Start</b>) until you have {DAILY_TARGET_ATTEMPTS} attempts for the day.</li>
           <li>For each problem: press <b>Start</b> on the timer, solve <b>out loud</b>, press <b>Log attempt</b>. Be honest about the outcome; if it wasn&apos;t clean, write what stopped you.</li>
-          <li>Once a week (Sunday works) open <L href="/review">Review</L> and do whatever is under <b>Focus now</b>.</li>
+          <li>Once a week (Sunday works) go through Review&apos;s scorecards properly and book the week&apos;s mock.</li>
         </ol>
       </Section>
 
