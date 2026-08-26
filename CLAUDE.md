@@ -36,13 +36,13 @@ Suggested slots: W2–4 Spark, W5–7 Snowflake, W8 turn both into one "warehous
 ## Stack
 
 - **Next.js 16** (App Router, TypeScript, Server Components, server actions), Node 24, deployed on Vercel Hobby
-- **Upstash Redis** (Vercel Marketplace, free tier) holds the whole app state as **one JSON document** at key `prep-tracker:state`. No schema, no migrations. Locally, with no Redis env vars, state persists to `.data/state.json` (gitignored).
+- The whole app state is **one JSON document** (key `prep-tracker:state`). Backend chosen by env: **Supabase** (`SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`; single-row `app_state` table from `supabase/schema.sql`, accessed via PostgREST `fetch`, service key server-only) or **Upstash Redis** (`UPSTASH_REDIS_REST_*` / `KV_REST_API_*`). No ORM, no per-feature migrations. Locally with neither set, state persists to `.data/state.json` (gitignored).
 - **Tailwind CSS 4 + shadcn/ui** (base-nova style, Base UI primitives — note `render` prop, not `asChild`). Native `<select>` for forms because it's better on a phone. Dark mode by default, per-device toggle.
 - **Recharts** for the four Progress charts only.
 - **Vitest** for `src/lib/logic.ts`; GitHub Actions runs lint → typecheck → test → build.
 - Single password gate: `APP_PASSWORD` env var, HMAC cookie checked in `src/proxy.ts`. Unset locally = no login.
 
-Supabase was in the original spec and was dropped on 2026-08-25 for a barebones, free, cross-device setup.
+Supabase Auth/RLS-per-table from the original spec was dropped on 2026-08-25; Supabase came back on 2026-08-26 as a plain JSON store because I already run it.
 
 ## Core domain
 

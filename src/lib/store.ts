@@ -7,6 +7,24 @@ import { AppState, SEED_ARTIFACTS, emptyState } from "./types";
 const KEY = "prep-tracker:state";
 const LOCAL_FILE = process.env.PREP_DATA_FILE ?? path.join(process.cwd(), ".data", "state.json");
 
+/**
+ * Supabase backend: one row in `public.app_state` (key text pk, data jsonb).
+ * Uses the service-role key from the server only — never exposed to the client — so RLS is not needed.
+ */
+function supabase(): { url: string; key: string } | null {
+  const url = process.env.SUPABASE_URL, key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  return url && key ? { url: url.replace(/\/$/, ""), key } : null;
+}
+async function sbFetch(path: string, init: RequestInit = {}) {
+  const sb = supabase()!;
+  const res = await fetch(`${sb.url}/rest/v1/${path}`, {
+    ...init, cache: "no-store",
+    headers: { apikey: sb.key, Authorization: `Bearer ${sb.key}`, "Content-Type": "application/json", ...(init.headers ?? {}) },
+  });
+  if (!res.ok) throw new Error(`Supabase ${res.status}: ${await res.text()}`);
+  return res;
+}
+
 function redis(): Redis | null {
   const url = process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
@@ -21,6 +39,10 @@ function withSeeds(state: AppState): AppState {
 }
 
 export async function getState(): Promise<AppState> {
+  if (supabase()) {
+    const rows = (await (await sbFetch(`app_state?key=eq.${encodeURIComponent(KEY)}&select=data`)).json()) as { data: AppState }[];
+    return withSeeds(rows[0]?.data ?? emptyState());
+  }
   const r = redis();
   if (r) return withSeeds((await r.get<AppState>(KEY)) ?? emptyState());
   try {
@@ -31,6 +53,10 @@ export async function getState(): Promise<AppState> {
 }
 
 export async function setState(state: AppState): Promise<void> {
+  if (supabase()) {
+    await sbFetch("app_state", { method: "POST", headers: { Prefer: "resolution=merge-duplicates" }, body: JSON.stringify({ key: KEY, data: state, updated_at: new Date().toISOString() }) });
+    return;
+  }
   const r = redis();
   if (r) { await r.set(KEY, state); return; }
   await fs.mkdir(path.dirname(LOCAL_FILE), { recursive: true });
@@ -44,4 +70,4 @@ export async function mutate(fn: (s: AppState) => void): Promise<void> {
   await setState(s);
 }
 
-export const storageBackend = () => (redis() ? "upstash-redis" : "local-file");
+export const storageBackend = () => (supabase() ? "supabase" : redis() ? "upstash-redis" : "local-file");

@@ -10,7 +10,7 @@ A small, single-user web app for tracking a 10-week software-engineering intervi
 
 - **Next.js 16** (App Router, Server Components, server actions) + TypeScript
 - **shadcn/ui** + Tailwind CSS 4, **Recharts** for the four progress charts
-- **Upstash Redis** holds the whole app state as one JSON document — no schema, no migrations. Falls back to a local JSON file in development.
+- The whole app state is **one JSON document**, stored in **Supabase** (a single-row `app_state` table, `supabase/schema.sql`) or **Upstash Redis** — whichever env vars are set. No ORM, no per-feature migrations. Falls back to a local JSON file in development.
 - **Vitest** for the domain logic, GitHub Actions for lint / typecheck / test / build
 - Deployed on **Vercel** (Hobby tier)
 
@@ -32,12 +32,14 @@ npm test           # vitest
 npm run lint && npm run typecheck
 ```
 
-## Deploy (Vercel Hobby)
+## Deploy (Vercel Hobby + Supabase)
 
-1. Import the repo in Vercel.
-2. Storage → Marketplace → **Upstash** → Redis (free). Connect it to the project; it injects `KV_REST_API_URL` / `KV_REST_API_TOKEN` (or `UPSTASH_REDIS_REST_*`) — both work.
-3. Add `APP_PASSWORD`. Without it the app is open.
+1. Supabase → New project (Singapore). SQL Editor → paste `supabase/schema.sql` → Run.
+2. Supabase → Project Settings → API: copy **Project URL** and the **service_role** key (not anon).
+3. Vercel → Import the repo → Settings → Environment Variables: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `APP_PASSWORD`.
 4. Deploy. Sign in once per device; the cookie lasts a year. Settings → Export JSON is the backup.
+
+Upstash Redis works instead of Supabase: connect it from Vercel's Storage tab and skip steps 1–2.
 
 ## Conventions
 
